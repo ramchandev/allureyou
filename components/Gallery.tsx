@@ -8,6 +8,8 @@ export default function Gallery() {
           <p className="lead">Every student leaves with a saree they pleated themselves. Here are a few from our past workshops at the studio.</p>
         </div>
         <div className="gal">
+          <figure><video width="1080" height="1920" src="/img/saree-pleat.m4v" autoPlay muted loop playsInline preload="metadata" aria-label="A finished blue silk saree drape with a gold border, from an earlier batch"></video><figcaption>A drape from an earlier batch</figcaption></figure>
+          <figure><video width="1080" height="1920" src="/img/saree-recent.m4v" autoPlay muted loop playsInline preload="metadata" aria-label="A finished yellow and blue silk saree drape with a gold waist belt, from a recent batch"></video><figcaption>A recent drape</figcaption></figure>
           <figure><img width="1100" height="825" src="/img/batch-studio.webp" alt="A workshop batch at the AllureYou studio holding their pre-pleated sarees" /><figcaption>A full batch at the studio</figcaption></figure>
           <figure><img width="1100" height="1465" src="/img/student-4.webp" alt="Student with a pleated aqua silk saree beside Yashmin" /></figure>
           <figure><video width="960" height="540" src="/img/studio-clip.mp4" autoPlay muted loop playsInline preload="metadata" aria-label="A student setting pleats with an iron during a workshop"></video><figcaption>Setting the pleats, workshop day</figcaption></figure>

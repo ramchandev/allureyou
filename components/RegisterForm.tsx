@@ -7,14 +7,17 @@ export default function RegisterForm() {
   const nameRef = useRef<HTMLInputElement>(null), phoneRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null), areaRef = useRef<HTMLInputElement>(null), msgRef = useRef<HTMLTextAreaElement>(null);
   const doneRef = useRef<HTMLDivElement>(null);
+  const sendingRef = useRef(false);
   const [seats, setSeats] = useState('1');
   const [nameErr, setNameErr] = useState(''), [phoneErr, setPhoneErr] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
   const [summary, setSummary] = useState(''), [waLink, setWaLink] = useState('#');
   const n = +seats;
 
-  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (sendingRef.current) return;
     const name = nameRef.current!.value.trim();
     let phone = phoneRef.current!.value.replace(/[^\d]/g, '');
     if (phone.length === 12 && phone.indexOf('91') === 0) phone = phone.slice(2);
@@ -33,22 +36,46 @@ export default function RegisterForm() {
     lines.push('', 'Please share the payment details.');
     const text = lines.join('\n');
 
-    /* optional lead capture: fire-and-forget to an external endpoint, then carry on exactly as before */
-    if (site.leadEndpoint) {
-      try {
-        fetch(site.leadEndpoint, {
-          method: 'POST', mode: 'no-cors', keepalive: true, headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({ name, phone: '+91' + phone, email, area, seats: count, total: site.price * count, note, source: 'workshop', at: new Date().toISOString() }),
-        }).catch(() => {});
-      } catch { /* ignore */ }
-    }
+    const href = waRegisterHref(text);
+    const gotcha = new FormData(e.currentTarget).get('_gotcha');
+    if (gotcha) return;
 
-    flushSync(() => { setSummary(text); setWaLink(waRegisterHref(text)); setSubmitted(true); });
-    doneRef.current!.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    sendingRef.current = true;
+    flushSync(() => setSending(true));
+    fetch(site.leadForm, {
+      method: 'POST',
+      mode: 'no-cors',
+      keepalive: true,
+      body: new URLSearchParams({
+        name,
+        email: email || site.leadFallbackEmail,
+        phone: '+91' + phone,
+        message: note,
+        area,
+        seats: String(count),
+      }),
+    }).catch(() => {});
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 8000);
+    try {
+      await fetch('/api/register/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        signal: ctrl.signal,
+        body: JSON.stringify({ name, phone: '+91' + phone, email, area, seats: count, message: note }),
+      });
+    } catch {
+      /* WhatsApp still opens if the inbox email cannot be sent. */
+    } finally {
+      clearTimeout(timer);
+    }
+    flushSync(() => { setSummary(text); setWaLink(href); setSubmitted(true); setSending(false); });
+    sendingRef.current = false;
+    window.location.href = href;
   }
 
   return (
-    <form id="regForm" noValidate onSubmit={onSubmit}>
+    <form id="regForm" action={site.leadForm} method="POST" noValidate onSubmit={onSubmit}>
       <div id="formBody" style={{ display: 'grid', gap: '18px' }} hidden={submitted}>
         <h3>Your details</h3>
         <div className="row">
@@ -63,8 +90,9 @@ export default function RegisterForm() {
           <div className="field"><label htmlFor="seats">Seats</label><select id="seats" name="seats" value={seats} onChange={(e) => setSeats(e.target.value)}><option>1</option><option>2</option><option>3</option><option>4</option></select></div>
           <div className="field"><span className="flabel">Total</span><output className="total" id="total" htmlFor="seats">{inr(site.price * n)}{n > 1 ? <small>{`${n} × ${priceLabel}`}</small> : <small>per person</small>}</output></div>
         </div>
-        <div className="field"><label htmlFor="msg">Anything we should know?</label><textarea ref={msgRef} id="msg" name="msg" placeholder="Any other questions"></textarea></div>
-        <button className="btn btn-gold" type="submit"><svg className="wa"><use href="#wa" /></svg>Send registration on WhatsApp</button>
+        <div className="field"><label htmlFor="message">Anything we should know?</label><textarea ref={msgRef} id="message" name="message" placeholder="Any other questions"></textarea></div>
+        <input type="text" name="_gotcha" style={{ display: 'none' }} tabIndex={-1} autoComplete="off" aria-hidden="true" />
+        <button className="btn btn-gold" type="submit" disabled={sending} aria-busy={sending || undefined}><svg className="wa"><use href="#wa" /></svg>{sending ? 'Sending…' : 'Send registration on WhatsApp'}</button>
       </div>
       <div className="done" id="done" ref={doneRef} hidden={!submitted}>
         <div className="tick"><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-10" /></svg></div>

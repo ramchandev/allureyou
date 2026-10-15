@@ -7,14 +7,14 @@ test.describe('workshop', () => {
   test('loads cleanly: no console errors / hydration warnings, no horizontal scroll at 390', async ({ page }) => {
     const bad = watchConsole(page);
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/workshop/'); await ready(page);
+    await page.goto('/saree-pre-pleating-draping-workshop/'); await ready(page);
     await noHorizontalScroll(page);
     expect(bad).toEqual([]);
   });
 
   test('every photo has twinkling sparkles only: no glow, no light sweep', async ({ page }) => {
-    await page.goto('/workshop/'); await ready(page);
-    const groups: Record<string, number> = { '.collage figure': 3, '.why-img': 1, '.mod': 3, '.gal figure': 12, '.reel': 9, '.poster': 1 };
+    await page.goto('/saree-pre-pleating-draping-workshop/'); await ready(page);
+    const groups: Record<string, number> = { '.collage figure': 3, '.why-img': 1, '.mod': 3, '.gal figure': 14, '.reel': 9, '.poster': 1 };
     for (const [sel, n] of Object.entries(groups)) {
       const counts = await page.$$eval(sel, (els) => els.map((e) => e.querySelectorAll(':scope > .spk').length));
       expect(counts.length, sel).toBe(n);
@@ -29,7 +29,7 @@ test.describe('workshop', () => {
   });
 
   test('Yashmin arch: floating sparkles + twinkling stars, no halo', async ({ page }) => {
-    await page.goto('/workshop/'); await ready(page);
+    await page.goto('/saree-pre-pleating-draping-workshop/'); await ready(page);
     expect(await page.locator('.arch-wrap > .spk.float').count()).toBe(16);
     expect(await page.locator('.arch .spk').count()).toBe(0);
     const names = await page.$$eval('.arch-wrap .st', (s) => s.map((e) => getComputedStyle(e).animationName));
@@ -39,7 +39,7 @@ test.describe('workshop', () => {
   });
 
   test('countdown band: Days : Hours : Mins : Secs', async ({ page }) => {
-    await page.goto('/workshop/'); await ready(page);
+    await page.goto('/saree-pre-pleating-draping-workshop/'); await ready(page);
     const labels = await page.$$eval('#count small', (s) => s.map((e) => e.textContent));
     expect(labels).toEqual(['Days', 'Hours', 'Mins', 'Secs']);
     const vals = await page.$$eval('#count b', (s) => s.map((e) => e.textContent));
@@ -48,7 +48,7 @@ test.describe('workshop', () => {
 
   test('exactly four sparkles + one shine on every button, no duplicates across reloads', async ({ page }) => {
     for (let i = 0; i < 2; i++) {
-      await page.goto('/workshop/'); await ready(page);
+      await page.goto('/saree-pre-pleating-draping-workshop/'); await ready(page);
       const r = await page.$$eval('.btn', (bs) => bs.map((b) => `${b.querySelectorAll(':scope > .spk').length}/${b.querySelectorAll(':scope > .shine').length}`));
       expect(r.length).toBeGreaterThan(8);
       for (const x of r) expect(x).toBe('4/1');
@@ -57,7 +57,7 @@ test.describe('workshop', () => {
   });
 
   test('reels render from site data, with links and images', async ({ page }) => {
-    await page.goto('/workshop/'); await ready(page);
+    await page.goto('/saree-pre-pleating-draping-workshop/'); await ready(page);
     const reels = await page.$$eval('#reelRow .reel', (a) => a.map((e) => ({ href: (e as HTMLAnchorElement).href, label: e.getAttribute('aria-label'), img: e.querySelector('img')!.getAttribute('src') })));
     expect(reels).toHaveLength(9);
     expect(reels[0]).toEqual({ href: 'https://www.instagram.com/reel/DXEsbgmEml2/', label: 'Watch reel: Bridal silk drape on Instagram', img: '/img/pleats-closeup.webp' });
@@ -65,8 +65,11 @@ test.describe('workshop', () => {
   });
 
   test.describe('registration form', () => {
-    test('fields, live total, validation, submit, WhatsApp link, edit', async ({ page }) => {
-      await page.goto('/workshop/'); await ready(page);
+    test('fields, live total, validation, then email and WhatsApp', async ({ page }) => {
+      const posts: { url: string; body: string }[] = [];
+      page.on('request', (r) => { if (r.method() === 'POST') posts.push({ url: r.url(), body: r.postData() || '' }); });
+      await page.route('**/api/register/**', (route) => route.fulfill({ status: 200, contentType: 'application/json', body: '{"ok":true}' }));
+      await page.goto('/saree-pre-pleating-draping-workshop/'); await ready(page);
       await expect(page.getByLabel('Full name')).toBeVisible();
       await expect(page.getByLabel('WhatsApp number')).toBeVisible();
       await expect(page.getByLabel(/^Email/)).toBeVisible();
@@ -99,41 +102,54 @@ test.describe('workshop', () => {
       // valid: 91 prefix stripped
       await page.fill('#phone', '+91 98765 43210');
       await page.fill('#email', 'priya@example.com'); await page.fill('#area', 'Porur');
-      await page.fill('#msg', 'Is parking available?');
-      await page.click('button[type=submit]');
-      await expect(page.locator('#done')).toBeVisible();
-      await expect(page.locator('#formBody')).toBeHidden();
-      await expect(page.locator('#done h3')).toHaveText('One last step');
-      const summary = await page.locator('#summary').innerText();
-      expect(summary).toBe([
+      await page.fill('#message', 'Is parking available?');
+      const summary = [
         'Hi Yashmin, I would like to register for the Saree Pre-Pleating & Draping Workshop on Sat, 31 Oct 2026.', '',
         'Name: Priya Raman', 'WhatsApp: +91 9876543210', 'Email: priya@example.com', 'Area: Porur', 'Seats: 2 (Total ₹2,998)', 'Note: Is parking available?', '', 'Please share the payment details.',
-      ].join('\n'));
-      const href = await page.locator('#waLink').getAttribute('href');
-      expect(href!.startsWith('https://wa.me/919597939658?text=')).toBe(true);
-      expect(decodeURIComponent(href!.split('?text=')[1])).toBe(summary);
-      expect(summary.endsWith('Please share the payment details.')).toBe(true);
-
-      await page.click('#editBtn');
-      await expect(page.locator('#formBody')).toBeVisible();
-      await expect(page.locator('#done')).toBeHidden();
-      await expect(page.locator('#name')).toBeFocused();
-      await expect(page.locator('#name')).toHaveValue('Priya Raman');
+      ].join('\n');
+      await Promise.all([
+        page.waitForURL(/https:\/\/wa\.me\/919597939658\?text=/),
+        page.click('button[type=submit]'),
+      ]);
+      expect(decodeURIComponent(new URL(page.url()).searchParams.get('text')!)).toBe(summary);
+      const lead = posts.find((p) => p.url.includes('api.cofolo.in'));
+      const mail = posts.find((p) => p.url.includes('/api/register'));
+      expect(lead).toBeTruthy();
+      expect(new URLSearchParams(lead!.body).get('email')).toBe('priya@example.com');
+      expect(JSON.parse(mail!.body)).toMatchObject({
+        name: 'Priya Raman', phone: '+919876543210', email: 'priya@example.com', area: 'Porur', seats: 2, message: 'Is parking available?',
+      });
     });
 
-    test('optional lead endpoint is off by default (no network call on submit)', async ({ page }) => {
-      const calls: string[] = [];
-      page.on('request', (r) => { if (r.method() === 'POST') calls.push(r.url()); });
-      await page.goto('/workshop/'); await ready(page);
+    test('lead capture posts the form, and fills the studio email when none is given', async ({ page }) => {
+      const posts: { url: string; body: string }[] = [];
+      page.on('request', (r) => { if (r.method() === 'POST') posts.push({ url: r.url(), body: r.postData() || '' }); });
+      await page.route('**/api/register/**', (route) => route.fulfill({ status: 200, contentType: 'application/json', body: '{"ok":true}' }));
+      await page.goto('/saree-pre-pleating-draping-workshop/'); await ready(page);
       await page.fill('#name', 'Priya Raman'); await page.fill('#phone', '9876543210');
-      await page.click('button[type=submit]');
-      await expect(page.locator('#done')).toBeVisible();
-      expect(calls).toEqual([]);
+      await page.fill('#area', 'Porur'); await page.fill('#message', 'Is parking available?');
+      await page.selectOption('#seats', '2');
+      await Promise.all([
+        page.waitForURL(/https:\/\/wa\.me\/919597939658\?text=/),
+        page.click('button[type=submit]'),
+      ]);
+      const lead = posts.find((p) => p.url === 'https://api.cofolo.in/public/v1/forms/9u56RfkdouP_CbddDArRE6gOH8GAinhs');
+      expect(lead).toBeTruthy();
+      const sent = new URLSearchParams(lead!.body);
+      expect(sent.get('name')).toBe('Priya Raman');
+      expect(sent.get('phone')).toBe('+919876543210');
+      expect(sent.get('email')).toBe('yashmin@allureyoubridal.com');
+      expect(sent.get('message')).toBe('Is parking available?');
+      expect(sent.get('area')).toBe('Porur');
+      expect(sent.get('seats')).toBe('2');
+      expect(decodeURIComponent(page.url())).not.toContain('yashmin@allureyoubridal.com');
+      const mail = posts.find((p) => p.url.includes('/api/register'));
+      expect(JSON.parse(mail!.body).email).toBe('');
     });
   });
 
   test('mobile sticky bar shows at <=640px only', async ({ page }) => {
-    await page.setViewportSize({ width: 640, height: 900 }); await page.goto('/workshop/'); await ready(page);
+    await page.setViewportSize({ width: 640, height: 900 }); await page.goto('/saree-pre-pleating-draping-workshop/'); await ready(page);
     await expect(page.locator('.mbar')).toBeVisible();
     await expect(page.locator('.mbar a')).toHaveText(['WhatsApp', 'Reserve seat']);
     await page.setViewportSize({ width: 641, height: 900 });
@@ -142,7 +158,7 @@ test.describe('workshop', () => {
 
   test('prefers-reduced-motion disables all animation', async ({ browser }) => {
     const ctx = await browser.newContext({ reducedMotion: 'reduce' }); const p = await ctx.newPage();
-    await p.goto('/workshop/'); await p.waitForTimeout(600);
+    await p.goto('/saree-pre-pleating-draping-workshop/'); await p.waitForTimeout(600);
     const running = await p.evaluate(() => document.getAnimations().filter((a) => a instanceof CSSAnimation && a.playState === 'running').length);
     expect(running).toBe(0);
     expect(await p.$eval('html', (e) => getComputedStyle(e).scrollBehavior)).toBe('auto');
@@ -150,7 +166,7 @@ test.describe('workshop', () => {
   });
 
   test('details, FAQ and registration copy', async ({ page }) => {
-    await page.goto('/workshop/'); await ready(page);
+    await page.goto('/saree-pre-pleating-draping-workshop/'); await ready(page);
     await expect(page.locator('.fact.price')).toHaveText('₹1,499 per person');
     await expect(page.locator('.ticket dl')).toContainText('Saturday, 31 October 2026');
     await expect(page.locator('.ticket dl')).toContainText('₹1,499 per person');
@@ -161,7 +177,7 @@ test.describe('workshop', () => {
   });
 
   test('internal links point at / ; external links unchanged', async ({ page }) => {
-    await page.goto('/workshop/'); await ready(page);
+    await page.goto('/saree-pre-pleating-draping-workshop/'); await ready(page);
     await expect(page.locator('a.logo')).toHaveAttribute('href', '/');
     await expect(page.getByRole('link', { name: 'Studio home' })).toHaveAttribute('href', '/');
     await expect(page.getByRole('link', { name: 'Ask on WhatsApp' })).toHaveAttribute('href', 'https://wa.me/919597939658?text=Hi%20Yashmin%2C%20I%20have%20a%20question%20about%20the%20Saree%20Pre-Pleating%20%26%20Draping%20Workshop%20on%2031%20Oct.');
@@ -175,7 +191,7 @@ test.describe('across pages', () => {
     const bad = watchConsole(page);
     await page.goto('/'); await ready(page);
     const homeSpk = await page.$$eval('.spk', (e) => e.length);
-    await page.click('.announce a'); await page.waitForURL('**/workshop/'); await ready(page);
+    await page.click('.announce a'); await page.waitForURL('**/saree-pre-pleating-draping-workshop/'); await ready(page);
     const wsSpk = await page.$$eval('.spk', (e) => e.length);
     // home's rules must not leak: workshop .hero is a normal block with padding, not a 600px+ min-height flex stage
     expect(await page.$eval('.hero', (e) => getComputedStyle(e).minHeight)).toBe("0px");
@@ -186,7 +202,7 @@ test.describe('across pages', () => {
     expect(await page.$eval('header', (e) => getComputedStyle(e).zIndex)).toBe('20');
     await page.click('a.logo'); await ready(page);
     expect(await page.$$eval('.spk', (e) => e.length)).toBe(homeSpk);
-    await page.goto('/workshop/'); await ready(page);
+    await page.goto('/saree-pre-pleating-draping-workshop/'); await ready(page);
     expect(await page.$$eval('.spk', (e) => e.length)).toBe(wsSpk);
     expect(bad).toEqual([]);
   });

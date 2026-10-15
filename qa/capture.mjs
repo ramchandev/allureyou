@@ -7,7 +7,7 @@ const out = new URL(`./${name}/`, import.meta.url).pathname;
 fs.mkdirSync(out, { recursive: true });
 
 const VIEWPORTS = [[1440, 900], [1100, 800], [1000, 760], [768, 1024], [390, 844]];
-const PAGES = { home: '/', workshop: '/workshop' };
+const PAGES = { home: '/', workshop: '/saree-pre-pleating-draping-workshop' };
 
 // Next's runtime draws 2 Math.random() values at load; give those a separate stream so the sparkle stream lines up with the original page.
 const SKIP = name === 'baseline' || name === 'baseline2' ? 0 : Number(process.env.RSKIP ?? 2);

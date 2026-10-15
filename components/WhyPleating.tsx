@@ -4,7 +4,7 @@ export default function WhyPleating() {
   return (
     <section className="sec gutter">
       <div className="wrap why">
-        <div className="why-img"><img width="1100" height="1467" src="/img/drape-black-studio.webp" alt="A bride draped in a black silk saree with violet border, ready in the studio" /></div>
+        <div className="why-img"><img width="1024" height="1536" src="/img/why-drape.webp" alt="A full-length yellow and blue silk saree drape with a gold waist belt" /></div>
         <div className="why-copy">
           <span className="eyebrow">Why pre-pleating</span>
           <h2>The saree is ready <em>before</em> the bride is.</h2>

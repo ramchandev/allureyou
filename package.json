@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev --webpack",
     "build": "next build --webpack",
-    "start": "npx serve out -p 4100",
+    "start": "next start -p 4100",
     "qa:baseline": "node qa/capture.mjs baseline http://localhost:4000",
     "qa:current": "node qa/capture.mjs current http://localhost:4100",
     "qa:diff": "node qa/diff.mjs",

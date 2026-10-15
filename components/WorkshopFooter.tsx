@@ -7,6 +7,10 @@ export default function WorkshopFooter() {
         <img src="/img/logo-light.webp" alt="AllureYou" width="564" height="194" />
         <span>AllureYou Bridal &amp; Beauty Studio · Near Anandha Stores, Padmavathi Nagar,<br />{`Iyyappanthangal, ${site.address.locality} ${site.address.postalCode}`}</span>
         <span><a href={site.instagram} target="_blank" rel="noopener">Instagram</a> · <a href={site.google} target="_blank" rel="noopener">Google reviews</a> · <a href={site.routes.home}>Studio home</a></span>
+        <div className="foot-note">
+          <a href="#saree-pre-pleating-draping">Back to top</a>
+          <span>Website design by <a href="https://www.bizysite.in/" target="_blank" rel="nofollow noreferrer">Bizy Site</a></span>
+        </div>
       </div>
     </footer>
   );

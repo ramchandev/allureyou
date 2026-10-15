@@ -21,7 +21,7 @@ const price = 1499;
 export const site = {
   name: 'AllureYou Bridal & Beauty Studio',
   shortName: 'AllureYou',
-  url: (process.env.NEXT_PUBLIC_SITE_URL || 'https://allureyou.in').replace(/\/$/, ''),
+  url: (process.env.NEXT_PUBLIC_SITE_URL || 'https://www.allureyoubridal.com').replace(/\/$/, ''),
   phone: '919597939658',
   phoneDisplay: '+91 95979 39658',
   price,
@@ -35,7 +35,7 @@ export const site = {
   instagram: 'https://www.instagram.com/makeupbyyashmin/',
   instagramHandle: '@makeupbyyashmin',
   google: 'https://share.google/3AzbgXEqTsxx5JMOA',
-  routes: { home: '/', workshop: '/workshop/' },
+  routes: { home: '/', workshop: '/saree-pre-pleating-draping-workshop/' },
   workshop: {
     title: 'Saree Pre-Pleating & Draping Workshop',
     start,
@@ -56,14 +56,16 @@ export const site = {
     ['DXHGdIjEg5U', 'Pleats in minutes', 'drape-blue'],
     ['DTcEhsakp1V', 'Studio drape', 'drape-black-studio'],
     ['DTQJEf6DJ8E', 'Setting the pleats', 'draping-hands'],
-    ['DTN159hkuT6', 'Box folding', 'pleats-pink-1'],
+    ['DdikrRNSMjh', 'Engagement clicks', 'engagement-clicks'],
     ['DKuHEWNSo7U', 'Fluffy pleats', 'pleats-pink-2'],
     ['DKrhwHzSjLV', 'Bridal look', 'bride-full'],
     ['DC8ZclVS47W', 'Drape without ironing', 'student-1'],
     ['DCbouW5yQn-', 'Silk saree finish', 'yashmin'],
   ] as ReadonlyArray<readonly [string, string, string]>,
-  /** Optional lead capture (external endpoint; off unless set at build time). */
-  leadEndpoint: process.env.NEXT_PUBLIC_LEAD_ENDPOINT || '',
+  /** Cofolo public form. Extra fields besides name, email, phone and message appear on the Lead. */
+  leadForm: 'https://api.cofolo.in/public/v1/forms/9u56RfkdouP_CbddDArRE6gOH8GAinhs',
+  /** Used only when the visitor leaves email blank, so the lead is still created. */
+  leadFallbackEmail: 'yashmin@allureyoubridal.com',
 } as const;
 
 /** 1499 -> "₹1,499" */

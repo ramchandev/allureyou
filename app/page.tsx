@@ -9,15 +9,14 @@ import PageMagic from '@/components/PageMagic';
 import JsonLd from '@/components/JsonLd';
 import { salonJsonLd } from '@/lib/jsonld';
 import { site } from '@/lib/site';
-
-const description = 'AllureYou Bridal & Beauty Studio by Yashmin — bridal makeup, hair, saree draping, nails and mehendi in Iyyappanthangal, Chennai.';
+import { homeSeo } from '@/lib/seo';
 
 export const metadata: Metadata = {
-  title: 'AllureYou Bridal Studio',
-  description,
+  title: homeSeo.title,
+  description: homeSeo.description,
   alternates: { canonical: site.routes.home },
-  openGraph: { type: 'website', url: site.routes.home, siteName: site.name, title: 'AllureYou Bridal Studio', description, images: [{ url: '/img/hero-bride.webp', width: 804, height: 1500, alt: 'A bride in a black and violet silk saree, makeup by Yashmin' }], locale: 'en_IN' },
-  twitter: { card: 'summary_large_image', title: 'AllureYou Bridal Studio', description, images: ['/img/hero-bride.webp'] },
+  openGraph: { type: 'website', url: site.routes.home, siteName: site.name, title: homeSeo.title, description: homeSeo.description, locale: 'en_IN' },
+  twitter: { card: 'summary_large_image', title: homeSeo.title, description: homeSeo.description },
 };
 
 export default function Home() {

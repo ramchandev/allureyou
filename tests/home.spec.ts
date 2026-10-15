@@ -158,10 +158,10 @@ test.describe('home', () => {
     await expect(page.locator('#nav')).toBeHidden();
   });
 
-  test('internal links: logo -> /, Draping + announce -> /workshop/', async ({ page }) => {
+  test('internal links: logo -> /, Draping + announce -> /saree-pre-pleating-draping-workshop/', async ({ page }) => {
     await page.goto('/'); await ready(page);
     await expect(page.locator('a.logo')).toHaveAttribute('href', '/');
-    await expect(page.getByRole('link', { name: 'Draping', exact: true })).toHaveAttribute('href', '/workshop/');
-    await expect(page.getByRole('link', { name: /Reserve your seat/ })).toHaveAttribute('href', '/workshop/');
+    await expect(page.getByRole('link', { name: 'Draping', exact: true })).toHaveAttribute('href', '/saree-pre-pleating-draping-workshop/');
+    await expect(page.getByRole('link', { name: /Reserve your seat/ })).toHaveAttribute('href', '/saree-pre-pleating-draping-workshop/');
   });
 });

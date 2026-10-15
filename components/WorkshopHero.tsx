@@ -3,10 +3,11 @@ import { priceLabel, site, waHref } from '@/lib/site';
 export default function WorkshopHero() {
   const w = site.workshop;
   return (
-    <section className="hero gutter" id="top">
+    <section className="hero gutter" id="saree-pre-pleating-draping">
       <div className="wrap hero-grid">
         <div className="hero-copy">
           <span className="eyebrow">One-day hands-on workshop</span>
+          <p className="batch">Our 12th batch</p>
           <h1>
             <span>Saree</span>
             <span className="gold">Pre-Pleating</span>
