@@ -3,6 +3,9 @@ import { useEffect } from 'react';
 import { site, waHref } from '@/lib/site';
 import { spark } from '@/lib/sparkles';
 
+/* Runs at parse time (before first paint), like the original end-of-body script, so she is never seen at the centre before hydration. */
+const EARLY_PLACE = "(function(){var m=document.querySelector('.model'),I=document.getElementById('letterI'),n=document.querySelector('.hero-inner');if(!m||!I||!n||window.matchMedia('(max-width:1100px)').matches)return;var r=I.getBoundingClientRect(),p=n.getBoundingClientRect();m.style.left=(r.left+r.width/2-p.left)+'px'})()";
+
 export default function Hero() {
   useEffect(() => {
     /* ported 1:1 from the original inline script */
@@ -83,6 +86,7 @@ export default function Hero() {
   }, []);
 
   return (
+    <>
     <section className="hero gutter" id="hero" aria-label="Bridal makeup by Yashmin">
       <div className="glow" aria-hidden="true"></div>
       <div className="spark s1" aria-hidden="true"><span className="line-h"></span><span className="line-v"></span><svg viewBox="0 0 24 24"><path d="M12 0C13 8 16 11 24 12 16 13 13 16 12 24 11 16 8 13 0 12 8 11 11 8 12 0Z" /></svg></div>
@@ -93,7 +97,7 @@ export default function Hero() {
           <span className="sub">Bridal &amp; Beauty Studio</span>
         </div>
         <h1 className="word" aria-label="Bridal"><span aria-hidden="true">BR</span><span aria-hidden="true" id="letterI">I</span><span aria-hidden="true">DAL</span></h1>
-        <div className="model"><img src="/img/hero-bride.webp" alt="A bride in a black and violet silk saree with jasmine in her braid, holding a lit diya — makeup by Yashmin" width="804" height="1500" fetchPriority="high" /><span className="her-spk" id="herSpk" aria-hidden="true"></span></div>
+        <div className="model" suppressHydrationWarning><img src="/img/hero-bride.webp" alt="A bride in a black and violet silk saree with jasmine in her braid, holding a lit diya — makeup by Yashmin" width="804" height="1500" fetchPriority="high" /><span className="her-spk" id="herSpk" aria-hidden="true"></span></div>
         <div className="lede">
           <p>Makeup, hair and draping for the morning you will <em>remember</em>. Made in our studio at Iyyappanthangal, Chennai.</p>
           <div className="cta-row">
@@ -110,5 +114,7 @@ export default function Hero() {
         </div>
       </div>
     </section>
+    <script dangerouslySetInnerHTML={{ __html: EARLY_PLACE }} />
+    </>
   );
 }

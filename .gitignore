@@ -5,3 +5,4 @@ out
 qa/current
 *.tsbuildinfo
 next-env.d.ts
+test-results
