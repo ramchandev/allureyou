@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "next dev --webpack",
+    "build": "next build --webpack",
     "start": "npx serve out -p 4100",
     "qa:baseline": "node qa/capture.mjs baseline http://localhost:4000",
     "qa:current": "node qa/capture.mjs current http://localhost:4100",

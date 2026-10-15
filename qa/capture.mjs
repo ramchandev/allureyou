@@ -9,7 +9,9 @@ fs.mkdirSync(out, { recursive: true });
 const VIEWPORTS = [[1440, 900], [1100, 800], [1000, 760], [768, 1024], [390, 844]];
 const PAGES = { home: '/', workshop: '/workshop' };
 
-const init = () => {
+// Next's runtime draws 2 Math.random() values at load; give those a separate stream so the sparkle stream lines up with the original page.
+const SKIP = name === 'baseline' || name === 'baseline2' ? 0 : Number(process.env.RSKIP ?? 2);
+const init = (SKIP) => {
   const FIXED = Date.parse('2026-10-20T10:00:00+05:30');
   const RD = Date;
   class MD extends RD {
@@ -18,7 +20,8 @@ const init = () => {
   }
   window.Date = MD;
   let s = 20261031;
-  Math.random = () => { s |= 0; s = (s + 0x6D2B79F5) | 0; let t = Math.imul(s ^ (s >>> 15), 1 | s); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  let calls = 0; const pre = () => 0.5;
+  Math.random = () => { if (calls++ < SKIP) return pre(); s |= 0; s = (s + 0x6D2B79F5) | 0; let t = Math.imul(s ^ (s >>> 15), 1 | s); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
 };
 
 async function settle(page) {
@@ -38,7 +41,7 @@ async function freeze(page) {
 async function open(browser, vw, vh, p) {
   const ctx = await browser.newContext({ viewport: { width: vw, height: vh }, deviceScaleFactor: 1, reducedMotion: 'no-preference' });
   const page = await ctx.newPage();
-  await page.addInitScript(init);
+  await page.addInitScript(init, SKIP);
   const errors = [];
   page.on('console', m => { if (['error', 'warning'].includes(m.type())) errors.push(m.text()); });
   page.on('pageerror', e => errors.push(String(e)));
