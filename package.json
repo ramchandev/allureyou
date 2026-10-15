@@ -1,0 +1,29 @@
+{
+  "name": "allureyou",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "npx serve out -p 4100",
+    "qa:baseline": "node qa/capture.mjs baseline http://localhost:4000",
+    "qa:current": "node qa/capture.mjs current http://localhost:4100",
+    "qa:diff": "node qa/diff.mjs",
+    "test": "playwright test"
+  },
+  "dependencies": {
+    "next": "^16.4.1",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "@types/node": "^26.6.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "pixelmatch": "^8.0.0",
+    "pngjs": "^7.0.0",
+    "serve": "^14.2.6",
+    "typescript": "^7.0.2"
+  }
+}
