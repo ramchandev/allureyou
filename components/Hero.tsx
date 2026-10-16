@@ -97,7 +97,7 @@ export default function Hero() {
           <span className="sub">Bridal &amp; Beauty Studio</span>
         </div>
         <h1 className="word" aria-label="Bridal"><span aria-hidden="true">BR</span><span aria-hidden="true" id="letterI">I</span><span aria-hidden="true">DAL</span></h1>
-        <div className="model" suppressHydrationWarning><img src="/img/hero-bride.webp" alt="A bride in a black and violet silk saree with jasmine in her braid, holding a lit diya — makeup by Yashmin" width="804" height="1500" fetchPriority="high" /><span className="her-spk" id="herSpk" aria-hidden="true"></span></div>
+        <div className="model" suppressHydrationWarning><img src="/img/hero-bride.webp" alt="A bride in a pink and gold silk saree with a silver necklace and mehendi — makeup by Yashmin" width="440" height="750" fetchPriority="high" /><span className="her-spk" id="herSpk" aria-hidden="true"></span></div>
         <div className="lede">
           <p>Makeup, hair and draping for the morning you will <em>remember</em>. Made in our studio at Iyyappanthangal, Chennai.</p>
           <div className="cta-row">
