@@ -5,14 +5,16 @@ import { join } from 'node:path';
 import { site } from '@/lib/site';
 
 const dir = join(process.cwd(), 'lib/og');
-const [jost, jostMed, heroBuf, pleatsBuf] = await Promise.all([
+const [jost, jostMed, heroBuf, logoBuf, pleatsBuf] = await Promise.all([
   readFile(join(dir, 'Jost-Regular.ttf')),
   readFile(join(dir, 'Jost-Medium.ttf')),
   readFile(join(dir, 'hero.png')),
+  readFile(join(dir, 'logo.png')),
   readFile(join(dir, 'pleats.jpg')),
 ]);
 
 const hero = `data:image/png;base64,${heroBuf.toString('base64')}`;
+const logo = `data:image/png;base64,${logoBuf.toString('base64')}`;
 const pleats = `data:image/jpeg;base64,${pleatsBuf.toString('base64')}`;
 
 const size = { width: 1200, height: 630 };
@@ -27,32 +29,33 @@ function image(node: ReactElement) {
 }
 
 export function homeOg() {
-  const services = ['Makeup', 'Hair', 'Draping', 'Nails', 'Mehendi'];
+  const services = ['Bridal Makeup', 'Hair Styling', 'Saree Draping', 'Pre-Pleating', 'Nail Art', 'Bridal Mehendi'];
   return image(
     <div style={{ display: 'flex', width: '100%', height: '100%', background: '#F7F0E4', color: '#2B0F24', fontFamily: 'Jost' }}>
-      <div style={{ display: 'flex', flexDirection: 'column', flex: 1, padding: '52px 48px 48px 56px', justifyContent: 'space-between' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', flex: 1, padding: '40px 40px 40px 52px', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <div style={{ display: 'flex', fontSize: 16, letterSpacing: 4, color: '#BF8E2E', fontWeight: 500 }}>ALLUREYOU · CHENNAI</div>
-          <div style={{ display: 'flex', flexDirection: 'column', marginTop: 18, fontWeight: 500, lineHeight: 0.92 }}>
-            <div style={{ fontSize: 84 }}>Bridal</div>
-            <div style={{ fontSize: 42, color: '#A3245E', marginTop: 8 }}>& Beauty Studio</div>
+          <img src={logo} width={300} height={103} style={{ objectFit: 'contain', objectPosition: 'left center' }} />
+          <div style={{ display: 'flex', marginTop: 18, fontSize: 18, letterSpacing: 3.2, color: '#BF8E2E', fontWeight: 500 }}>IYYAPPANTHANGAL · CHENNAI</div>
+          <div style={{ display: 'flex', flexDirection: 'column', marginTop: 20, fontWeight: 500, lineHeight: 1.05 }}>
+            <div style={{ fontSize: 54 }}>Bridal looks,</div>
+            <div style={{ fontSize: 54, color: '#A3245E' }}>ready for the day.</div>
           </div>
-          <div style={{ display: 'flex', marginTop: 22, fontSize: 26, lineHeight: 1.35, maxWidth: 620 }}>Makeup, hair, saree draping, nails and mehendi for the morning you will remember.</div>
-          <div style={{ display: 'flex', marginTop: 14, fontSize: 20, color: '#6A5361' }}>Iyyappanthangal, Chennai · by Yashmin</div>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', gap: 8 }}>
-            {services.map((name) => (
-              <div key={name} style={{ display: 'flex', border: '1px solid rgba(191,142,46,0.55)', borderRadius: 999, padding: '8px 14px', fontSize: 16 }}>{name}</div>
-            ))}
+          <div style={{ display: 'flex', marginTop: 18, fontSize: 24, lineHeight: 1.35, maxWidth: 560, color: '#4A3340' }}>
+            Makeup, hair, saree draping, pre-pleating, nails and mehendi with Yashmin.
           </div>
         </div>
-        <div style={{ display: 'flex' }}>
-          <div style={{ display: 'flex', background: '#2B0F24', color: '#E3BA58', borderRadius: 999, padding: '16px 28px', fontSize: 24, fontWeight: 500 }}>Book your look</div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, maxWidth: 620 }}>
+          {services.map((name) => (
+            <div key={name} style={{ display: 'flex', border: '1px solid rgba(191,142,46,0.55)', borderRadius: 999, padding: '8px 14px', fontSize: 16, background: 'rgba(255,255,255,0.35)' }}>{name}</div>
+          ))}
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
+          <div style={{ display: 'flex', background: '#BF8E2E', color: '#2B0F24', borderRadius: 999, padding: '16px 30px', fontSize: 24, fontWeight: 500 }}>Check your date</div>
+          <div style={{ display: 'flex', fontSize: 18, color: '#6A5361' }}>Message on WhatsApp</div>
         </div>
       </div>
-      <div style={{ display: 'flex', width: 380, height: '100%', alignItems: 'flex-end', justifyContent: 'center', paddingBottom: 0 }}>
-        <img src={hero} width={340} height={630} style={{ objectFit: 'contain', objectPosition: 'center bottom' }} />
+      <div style={{ display: 'flex', width: 420, height: '100%', alignItems: 'flex-end', justifyContent: 'center', background: 'linear-gradient(180deg, rgba(191,142,46,0.12) 0%, rgba(163,36,94,0.1) 100%)' }}>
+        <img src={hero} width={380} height={630} style={{ objectFit: 'contain', objectPosition: 'center bottom' }} />
       </div>
     </div>,
   );
